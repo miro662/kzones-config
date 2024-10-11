@@ -2,6 +2,13 @@
 
 [KZones](https://github.com/gerritdevriese/kzones) is a KWin script for snapping windows into zones. However, its configuration is a bit cumbersone. This CLI tool provides a much shorter way of defining layouts.
 
+# Installation
+
+## via `cargo`
+
+```
+cargo install kzones-config
+```
 
 # Usage
 
