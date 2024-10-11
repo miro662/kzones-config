@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+use serde::Serialize;
+
+#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
 pub struct Arena {
     pub x: u8,
     pub y: u8,

@@ -13,7 +13,6 @@ pub struct SplitParser;
 pub fn parse(input: &str) -> Instruction {
     let mut parse = SplitParser::parse(Rule::instruction, input).unwrap();
     let pair: pest::iterators::Pair<'_, Rule> = parse.next().unwrap();
-    println!("{:#?}", pair);
     parse_instruction(pair)
 }
 
@@ -58,7 +57,10 @@ fn parse_node(pair: Pair<Rule>) -> Node {
 
 #[cfg(test)]
 mod tests {
-    use crate::{arena::Direction, instruction::{Instruction, Node}};
+    use crate::{
+        arena::Direction,
+        instruction::{Instruction, Node},
+    };
 
     use super::parse;
 
