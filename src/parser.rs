@@ -1,10 +1,10 @@
-use pest::{iterators::Pair, Parser, error::Error as PestError};
+use pest::{error::Error as PestError, iterators::Pair, Parser};
 use pest_derive::Parser;
 use snafu::prelude::*;
 
 use crate::{
-    zone::Direction,
     instruction::{Instruction, Node},
+    zone::Direction,
 };
 
 #[derive(Parser)]
@@ -17,7 +17,7 @@ pub fn parse(input: &str) -> ParserResult<Instruction> {
     let result = parse_instruction(pair)?;
     match parse.next() {
         Some(_) => Err(ParserError::MoreThanOne),
-        None => Ok(result)
+        None => Ok(result),
     }
 }
 
@@ -51,10 +51,7 @@ fn parse_node(pair: Pair<Rule>) -> ParserResult<Node> {
         Rule::split => {
             let instruction =
                 parse_instruction(inner.next().expect("Split always have a second inner rule"))?;
-            Node {
-                ratio: 2.0,
-                instruction,
-            }
+            Node { ratio, instruction }
         }
         _ => unreachable!("Expected leaf or split"),
     };
@@ -64,8 +61,8 @@ fn parse_node(pair: Pair<Rule>) -> ParserResult<Node> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        zone::Direction,
         instruction::{Instruction, Node},
+        zone::Direction,
     };
 
     use super::parse;
@@ -112,7 +109,7 @@ pub type ParserResult<T> = Result<T, ParserError>;
 #[derive(Debug, Snafu)]
 pub enum ParserError {
     #[snafu(display("parser error:\n{source}"))]
-    Pest {source: PestError<Rule>},
+    Pest { source: PestError<Rule> },
     #[snafu(display("more than one layout description"))]
-    MoreThanOne
+    MoreThanOne,
 }

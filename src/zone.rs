@@ -79,7 +79,7 @@ pub enum Direction {
 
 #[cfg(test)]
 mod tests {
-    use super::{Zone, Direction};
+    use super::{Direction, Zone};
 
     #[test]
     fn test_horizontal_half() {

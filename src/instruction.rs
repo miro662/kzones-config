@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::zone::{Zone, Direction};
+use crate::zone::{Direction, Zone};
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Node {
@@ -49,8 +49,8 @@ mod tests {
     use std::collections::HashSet;
 
     use crate::{
-        zone::{Zone, Direction},
         instruction::Node,
+        zone::{Direction, Zone},
     };
 
     use super::Instruction;
@@ -153,6 +153,58 @@ mod tests {
                 y: 0,
                 width: 25,
                 height: 100,
+            },
+        ]);
+        let actual = instruction.slice(Zone::full());
+
+        assert_eq!(expected, actual)
+    }
+
+    #[test]
+    fn test_three_split() {
+        let instruction = Instruction::Split {
+            direction: Direction::Horizontal,
+            children: vec![
+                Node {
+                    ratio: 1.0,
+                    instruction: Instruction::Leaf,
+                },
+                Node {
+                    ratio: 1.0,
+                    instruction: Instruction::Split {
+                        direction: Direction::Vertical,
+                        children: vec![
+                            Node {
+                                ratio: 1.0,
+                                instruction: Instruction::Leaf,
+                            },
+                            Node {
+                                ratio: 1.0,
+                                instruction: Instruction::Leaf,
+                            },
+                        ],
+                    },
+                },
+            ],
+        };
+        let expected = HashSet::from([
+            Zone {
+                x: 0,
+                y: 0,
+                width: 50,
+                height: 100,
+            },
+            Zone {
+                x: 50,
+                y: 0,
+                width: 50,
+                height: 50,
+            },
+            Zone {
+                x: 50,
+                y: 50,
+                width: 50,
+                height: 50,
             },
         ]);
         let actual = instruction.slice(Zone::full());
