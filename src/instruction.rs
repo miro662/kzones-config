@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::arena::{Arena, Direction};
+use crate::zone::{Zone, Direction};
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Node {
@@ -19,13 +19,13 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn slice(&self, arena: Arena) -> HashSet<Arena> {
+    pub fn slice(&self, arena: Zone) -> HashSet<Zone> {
         let mut result = HashSet::new();
         self.slice_inner(arena, &mut result);
         result
     }
 
-    fn slice_inner(&self, arena: Arena, result: &mut HashSet<Arena>) {
+    fn slice_inner(&self, arena: Zone, result: &mut HashSet<Zone>) {
         match self {
             Instruction::Leaf => {
                 result.insert(arena);
@@ -49,7 +49,7 @@ mod tests {
     use std::collections::HashSet;
 
     use crate::{
-        arena::{Arena, Direction},
+        zone::{Zone, Direction},
         instruction::Node,
     };
 
@@ -58,8 +58,8 @@ mod tests {
     #[test]
     fn test_leaf() {
         let instruction = Instruction::Leaf;
-        let expected = HashSet::from([Arena::full()]);
-        let actual = instruction.slice(Arena::full());
+        let expected = HashSet::from([Zone::full()]);
+        let actual = instruction.slice(Zone::full());
 
         assert_eq!(expected, actual)
     }
@@ -80,20 +80,20 @@ mod tests {
             ],
         };
         let expected = HashSet::from([
-            Arena {
+            Zone {
                 x: 0,
                 y: 0,
                 width: 100,
                 height: 75,
             },
-            Arena {
+            Zone {
                 x: 0,
                 y: 75,
                 width: 100,
                 height: 25,
             },
         ]);
-        let actual = instruction.slice(Arena::full());
+        let actual = instruction.slice(Zone::full());
 
         assert_eq!(expected, actual)
     }
@@ -130,32 +130,32 @@ mod tests {
             ],
         };
         let expected = HashSet::from([
-            Arena {
+            Zone {
                 x: 0,
                 y: 0,
                 width: 25,
                 height: 100,
             },
-            Arena {
+            Zone {
                 x: 25,
                 y: 50,
                 width: 50,
                 height: 50,
             },
-            Arena {
+            Zone {
                 x: 25,
                 y: 0,
                 width: 50,
                 height: 50,
             },
-            Arena {
+            Zone {
                 x: 75,
                 y: 0,
                 width: 25,
                 height: 100,
             },
         ]);
-        let actual = instruction.slice(Arena::full());
+        let actual = instruction.slice(Zone::full());
 
         assert_eq!(expected, actual)
     }

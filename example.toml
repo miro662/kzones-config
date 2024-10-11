@@ -3,4 +3,4 @@ padding = 10
 [layouts]
 half = "h(1,1)"
 bigger_smaller = "h(2,1)"
-bigger_two_smaller = "h(2, 1: v(1, 1))"
+bigger_two_smaller = "h(2, 1: v(1, 1)) v(1)"

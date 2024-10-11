@@ -1,36 +1,41 @@
-use pest::{iterators::Pair, Parser};
+use pest::{iterators::Pair, Parser, error::Error as PestError};
 use pest_derive::Parser;
+use snafu::prelude::*;
 
 use crate::{
-    arena::Direction,
+    zone::Direction,
     instruction::{Instruction, Node},
 };
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
-pub struct SplitParser;
+pub struct LayoutParser;
 
-pub fn parse(input: &str) -> Instruction {
-    let mut parse = SplitParser::parse(Rule::instruction, input).unwrap();
-    let pair: pest::iterators::Pair<'_, Rule> = parse.next().unwrap();
-    parse_instruction(pair)
+pub fn parse(input: &str) -> ParserResult<Instruction> {
+    let mut parse = LayoutParser::parse(Rule::instruction, input).context(PestSnafu)?;
+    let pair: pest::iterators::Pair<'_, Rule> = parse.next().expect("At last one pair is expected");
+    let result = parse_instruction(pair)?;
+    match parse.next() {
+        Some(_) => Err(ParserError::MoreThanOne),
+        None => Ok(result)
+    }
 }
 
-fn parse_instruction(pair: Pair<Rule>) -> Instruction {
+fn parse_instruction(pair: Pair<Rule>) -> ParserResult<Instruction> {
     let mut inner = pair.into_inner();
     let direction = match inner.next().map(|p| p.as_rule()) {
         Some(Rule::horizontal) => Direction::Horizontal,
         Some(Rule::vertical) => Direction::Vertical,
         _ => unreachable!("Expected horizontal or vertical direction"),
     };
-    let children = inner.map(parse_node).collect();
-    Instruction::Split {
+    let children_result: Result<Vec<_>, ParserError> = inner.map(parse_node).collect();
+    Ok(Instruction::Split {
         direction,
-        children,
-    }
+        children: children_result?,
+    })
 }
 
-fn parse_node(pair: Pair<Rule>) -> Node {
+fn parse_node(pair: Pair<Rule>) -> ParserResult<Node> {
     let rule = pair.as_rule();
     let mut inner = pair.into_inner();
     let first_pair = inner.next().expect("Node always have at last one child");
@@ -38,27 +43,28 @@ fn parse_node(pair: Pair<Rule>) -> Node {
         .as_str()
         .parse()
         .expect("Rule allows only correct integers");
-    match rule {
+    let result = match rule {
         Rule::leaf => Node {
             ratio,
             instruction: Instruction::Leaf,
         },
         Rule::split => {
             let instruction =
-                parse_instruction(inner.next().expect("Split always have a second inner rule"));
+                parse_instruction(inner.next().expect("Split always have a second inner rule"))?;
             Node {
                 ratio: 2.0,
                 instruction,
             }
         }
         _ => unreachable!("Expected leaf or split"),
-    }
+    };
+    Ok(result)
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        arena::Direction,
+        zone::Direction,
         instruction::{Instruction, Node},
     };
 
@@ -66,7 +72,7 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let actual = parse("h(1, 2: v(3, 4), 5)");
+        let actual = parse("h(1, 2: v(3, 4), 5)").unwrap();
         let expected = Instruction::Split {
             direction: Direction::Horizontal,
             children: vec![
@@ -99,4 +105,14 @@ mod tests {
 
         assert_eq!(expected, actual);
     }
+}
+
+pub type ParserResult<T> = Result<T, ParserError>;
+
+#[derive(Debug, Snafu)]
+pub enum ParserError {
+    #[snafu(display("parser error:\n{source}"))]
+    Pest {source: PestError<Rule>},
+    #[snafu(display("more than one layout description"))]
+    MoreThanOne
 }

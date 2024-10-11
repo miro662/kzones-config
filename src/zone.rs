@@ -1,16 +1,16 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
-pub struct Arena {
+pub struct Zone {
     pub x: u8,
     pub y: u8,
     pub width: u8,
     pub height: u8,
 }
 
-impl Arena {
-    pub fn full() -> Arena {
-        Arena {
+impl Zone {
+    pub fn full() -> Zone {
+        Zone {
             x: 0,
             y: 0,
             width: 100,
@@ -22,7 +22,7 @@ impl Arena {
         &'a self,
         divisions: &'a [f64],
         direction: Direction,
-    ) -> impl Iterator<Item = Arena> + 'a {
+    ) -> impl Iterator<Item = Zone> + 'a {
         let size = match direction {
             Direction::Horizontal => self.width,
             Direction::Vertical => self.height,
@@ -48,13 +48,13 @@ impl Arena {
         sizes.into_iter().map(move |size| {
             pos += size;
             match direction {
-                Direction::Horizontal => Arena {
+                Direction::Horizontal => Zone {
                     x: pos - size,
                     y: self.y,
                     width: size,
                     height: self.height,
                 },
-                Direction::Vertical => Arena {
+                Direction::Vertical => Zone {
                     x: self.x,
                     y: pos - size,
                     width: self.width,
@@ -65,7 +65,7 @@ impl Arena {
     }
 }
 
-impl Default for Arena {
+impl Default for Zone {
     fn default() -> Self {
         Self::full()
     }
@@ -79,25 +79,25 @@ pub enum Direction {
 
 #[cfg(test)]
 mod tests {
-    use super::{Arena, Direction};
+    use super::{Zone, Direction};
 
     #[test]
     fn test_horizontal_half() {
         let expected = vec![
-            Arena {
+            Zone {
                 x: 0,
                 y: 0,
                 width: 50,
                 height: 100,
             },
-            Arena {
+            Zone {
                 x: 50,
                 y: 0,
                 width: 50,
                 height: 100,
             },
         ];
-        let actual: Vec<_> = Arena::full()
+        let actual: Vec<_> = Zone::full()
             .slice(&[1.0, 1.0], Direction::Horizontal)
             .collect();
 
@@ -107,26 +107,26 @@ mod tests {
     #[test]
     fn test_vertical_three() {
         let expected = vec![
-            Arena {
+            Zone {
                 x: 0,
                 y: 0,
                 width: 100,
                 height: 34,
             },
-            Arena {
+            Zone {
                 x: 0,
                 y: 34,
                 width: 100,
                 height: 33,
             },
-            Arena {
+            Zone {
                 x: 0,
                 y: 67,
                 width: 100,
                 height: 33,
             },
         ];
-        let actual: Vec<_> = Arena::full()
+        let actual: Vec<_> = Zone::full()
             .slice(&[1.0, 1.0, 1.0], Direction::Vertical)
             .collect();
 
