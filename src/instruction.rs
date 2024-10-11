@@ -2,13 +2,13 @@ use std::collections::HashSet;
 
 use crate::arena::{Arena, Direction};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Node {
-    ratio: f64,
-    instruction: Instruction,
+    pub ratio: f64,
+    pub instruction: Instruction,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub enum Instruction {
     #[default]
     Leaf,

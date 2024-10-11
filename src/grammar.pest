@@ -1,0 +1,10 @@
+instruction = { direction ~ "(" ~ (child ~ ",")* ~ child ~ ")"}
+direction = _{ horizontal | vertical }
+horizontal = @{"h" | "horizontal"}
+vertical = @{"v" | "vertical"}
+child = _{ split | leaf }
+leaf = { number }
+split = { number ~ ":" ~ instruction }
+number = @{'1'..'9' ~ ('0'..'9')*}
+
+WHITESPACE = _{" "}
