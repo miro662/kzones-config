@@ -1,9 +1,9 @@
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Arena {
-    x: u8,
-    y: u8,
-    width: u8,
-    height: u8,
+    pub x: u8,
+    pub y: u8,
+    pub width: u8,
+    pub height: u8,
 }
 
 impl Arena {
@@ -60,6 +60,12 @@ impl Arena {
                 },
             }
         })
+    }
+}
+
+impl Default for Arena {
+    fn default() -> Self {
+        Self::full()
     }
 }
 
