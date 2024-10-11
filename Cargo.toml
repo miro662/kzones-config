@@ -1,7 +1,7 @@
 [package]
 name = "kzones-config"
 description = "Make definitions of kzones layouts easier"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Mirosław Błażej <miro662@gmail.com>"]
 edition = "2021"
 readme = "README.md"
