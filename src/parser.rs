@@ -67,10 +67,8 @@ mod tests {
 
     use super::parse;
 
-    #[test]
-    fn test_parse() {
-        let actual = parse("h(1, 2: v(3, 4), 5)").unwrap();
-        let expected = Instruction::Split {
+    fn expected_fixture() -> Instruction {
+        Instruction::Split {
             direction: Direction::Horizontal,
             children: vec![
                 Node {
@@ -98,9 +96,19 @@ mod tests {
                     instruction: Instruction::Leaf,
                 },
             ],
-        };
+        }
+    }
 
-        assert_eq!(expected, actual);
+    #[test]
+    fn test_parse() {
+        let actual = parse("h(1, 2: v(3, 4), 5)").unwrap();
+        assert_eq!(expected_fixture(), actual);
+    }
+
+    #[test]
+    fn test_parse_with_full_names() {
+        let actual = parse("horizontal(1, 2: vertical(3, 4), 5)").unwrap();
+        assert_eq!(expected_fixture(), actual);
     }
 }
 

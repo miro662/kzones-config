@@ -1,7 +1,7 @@
 instruction = { direction ~ "(" ~ (child ~ ",")* ~ child ~ ")"}
 direction = _{ horizontal | vertical }
-horizontal = @{"h" | "horizontal"}
-vertical = @{"v" | "vertical"}
+horizontal = @{"horizontal" | "h"}
+vertical = @{"vertical" | "v"}
 child = _{ split | leaf }
 leaf = { number }
 split = { number ~ ":" ~ instruction }
